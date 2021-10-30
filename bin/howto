@@ -1,0 +1,28 @@
+#!/bin/bash
+while getopts :c OPT
+do
+    case $OPT in
+        c)  copy=1
+            ;;
+        \?) echo "howto: invalid option";exit 1
+    esac
+done
+
+shift $((OPTIND - 1))
+
+if [ $# != 1 ];then
+    echo "howto: needs argument what you want to do."
+    exit 1
+fi
+todo=$1
+doc=`dirname $(dirname $0)`/lib/howto/${todo}
+if [ -f $doc ];then
+    if [ ${copy+1} ];then
+        cat $doc | tr "\r\n" ";" | clip.exe
+    else
+        cat $doc
+    fi
+else
+    echo "No document for ${todo}."
+    exit 2
+fi

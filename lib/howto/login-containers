@@ -1,0 +1,8 @@
+*To front-counter-backend
+cd ~/cwsys-virtualenv
+docker compose exec -u webmaster -w /var/delivery/cwsys-front-counter-backend/app front-counter-backend /bin/bash 
+
+*To operation-office-backend
+cd ~/cwsys-virtualenv
+docker compose exec -u webmaster -w /var/delivery/cwsys-operation-office-backend/app operation-office-backend /bin/bash
+
