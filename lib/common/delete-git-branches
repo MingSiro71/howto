@@ -1,1 +1,0 @@
-git branch | grep #{here_keyword} | xargs -I {} git branch -d {}

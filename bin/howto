@@ -6,7 +6,7 @@ do
             ;;
         c)  copy=1
             ;;
-        \?) echo "howto: invalid option";exit 1
+        \?) echo "howto: invalid option.";exit 1
     esac
 done
 
