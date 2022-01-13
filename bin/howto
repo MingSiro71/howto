@@ -42,7 +42,7 @@ if [ -z "$knowledge" ];then
     echo "no knowledge available.";exit 2
 fi
 if [ ${copy+1} ];then
-    cat $knowledge | tr "\r\n" ";" | clip.exe
+    cat $knowledge | tr "\r\n" ";" | pbcopy
 else
     cat $knowledge
 fi

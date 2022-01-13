@@ -1,11 +1,8 @@
-# howto: WSL version
+# howto: Mac version
 Lookup commands which are too long to type or complicated to remember
 ON YOUR TERMINAL.
 
-This works only on WSL.
-Please customize clipboard-concerning command
-- in Mac: "clip.exe" to "pbcopy".
-- in Linux: ask google! :-P
+This works only on Mac using BASH.
 
 ## Instlation (recomended for your own workstation)
 1. Change bin file to 755
