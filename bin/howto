@@ -1,7 +1,9 @@
 #!/bin/bash
-while getopts :c OPT
+while getopts :ac OPT
 do
     case $OPT in
+        a)  ambiguous=1
+            ;;
         c)  copy=1
             ;;
         \?) echo "howto: invalid option";exit 1
@@ -10,19 +12,38 @@ done
 
 shift $((OPTIND - 1))
 
-if [ $# != 1 ];then
-    echo "howto: needs argument what you want to do."
+if [ $# -lt 1 ];then
+    echo "howto: needs words what you want to do."
     exit 1
 fi
-todo=$1
-doc=`dirname $(dirname $0)`/lib/howto/${todo}
-if [ -f $doc ];then
-    if [ ${copy+1} ];then
-        cat $doc | tr "\r\n" ";" | clip.exe
-    else
-        cat $doc
+
+libdir=`dirname $(dirname $0)`/lib/
+
+# for anbiguous mode
+if [ ${ambiguous+1} ];then
+    expression=$(echo *${@}* | sed "s/ /*/g")
+    availables=$(find $libdir -name "$expression")
+    if [ -z "$availables" ];then
+        echo "no knowledge available.";exit 2
     fi
-else
-    echo "No document for ${todo}."
-    exit 2
+    echo "available knowledges:"
+    for item in $availables;do
+        echo -en `basename $item | sed "s/-/ /g"`"\t"
+    done
+    echo ''
+    exit 0
 fi
+
+# main
+target=$(echo $@ | sed "s/ /-/g")
+libdir=`dirname $(dirname $0)`/lib/
+knowledge=`find $libdir -name $target | head -n 1`
+if [ -z "$knowledge" ];then
+    echo "no knowledge available.";exit 2
+fi
+if [ ${copy+1} ];then
+    cat $knowledge | tr "\r\n" ";" | clip.exe
+else
+    cat $knowledge
+fi
+exit 0
