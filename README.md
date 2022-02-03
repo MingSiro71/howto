@@ -14,9 +14,10 @@ Please customize clipboard-concerning command
     ```
 2. Add ${HOME}/howto/bin into $PATH
     ```
-    echo "PATH=${PATH}:${HOME}/howto/bin" >> .bashrc
+    'export PATH=${PATH}:${HOME}/howto/bin' >> .bashrc
     source .bashrc
     ```
+    replace ".bashrc" to ".zshrc" if you use zsh.
 
 ## Lookup comamnd
 type "howto" command
