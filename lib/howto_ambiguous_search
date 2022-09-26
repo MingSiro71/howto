@@ -1,0 +1,14 @@
+dictdir=`dirname $(dirname $0)`/dict
+
+expression=$(echo *${@}* | sed "s/ /*/g")
+availables=$(find $dictdir -name "$expression")
+if [ -z "$availables" ];then
+    echo "no knowledge available."
+    exit 2
+fi
+echo "available knowledges:"
+for item in $availables;do
+    echo -en `basename $item | sed "s/-/ /g"`"\t"
+done
+echo ''
+exit 0

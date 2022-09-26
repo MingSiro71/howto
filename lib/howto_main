@@ -1,0 +1,26 @@
+dictdir=`dirname $(dirname $0)`/dict
+
+COPY=$1
+shift
+
+target=$(echo $@ | sed "s/ /-/g")
+knowledge=`find $dictdir/ -name $target | head -n 1`
+if [ -z "$knowledge" ];then
+    echo "no knowledge available."
+    exit 2
+fi
+if [ ${COPY} -eq 1 ];then
+    # for mac OS
+    cat $knowledge | tr "\r\n" ";" | pbcopy 2>/dev/null
+    if [ $? -ne 0 ];then
+        # for windows OS
+        cat $knowledge | tr "\r\n" ";" | clip.exe 2>/dev/null
+    fi
+    if [ $? -ne 0 ];then
+        cat $knowledge
+        echo "WARNING: no clipboard support on your terminal."
+    fi
+else
+    cat $knowledge
+fi
+exit 0
