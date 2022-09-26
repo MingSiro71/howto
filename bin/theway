@@ -20,7 +20,7 @@ fi
 
 knowledge=$(echo $@ | sed "s/ /-/g")
 dictdir=$(dirname $(dirname $0))/dict/${group}
-file="${dir}/${knowledge}"
+file="${dictdir}/${knowledge}"
 
 test -d $dictdir || mkdir -p $dictdir
 
