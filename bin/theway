@@ -5,7 +5,7 @@ source ${libdir}/version
 source ${libdir}/constants
 
 PRV=0
-THEME=$DEFALT_THEME
+THEME=$DEFAULT_THEME
 words=()
 
 while (( $# > 0 ))
