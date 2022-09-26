@@ -1,59 +1,49 @@
 #!/bin/bash
-group="common"
-while getopts g:p OPT
+bash=/bin/bash
+libdir=$(dirname $(dirname $0))/lib
+source ${libdir}/version
+source ${libdir}/constants
+
+PRV=0
+THEME=$DEFAULT_THEME
+words=()
+
+while (( $# > 0 ))
 do
-    case $OPT in
-        g)  group=$OPTARG
-            ;;
-        p)  group="0_private"
-            ;;
-        \?) echo "howto: invalid option.";exit 1
+    case $1 in
+        -h | --help)
+            echo "theway ${version}"
+            echo "Usage: theway [-p|--private] WORDS... [on THEME]"
+            echo "Options:"
+            echo "    -p, --private: treat as a private knowledge, which is prior to public one."
+            exit 0
+        ;;
+        -p | --private)
+            PRV=1
+        ;;
+        -* | --*)
+            echo "bad option." 1>&2
+            exit 1
+        ;;
+        on)
+            if [ $# -eq 2 ];then
+                THEME=$2
+                shift
+            else
+                words+=($1)
+            fi
+        ;;
+        *)
+            words+=($1)
+        ;;
     esac
+    shift
 done
 
-shift $((OPTIND - 1))
-
-if [ $# -lt 1 ];then
-    echo "theway: needs words for knowledge. what you want to memorize?"
+if [ ${#words[@]} -lt 1 ];then
+    echo "theway: needs knowledge words." 1>&2
     exit 1
 fi
 
-knowledge=$(echo $@ | sed "s/ /-/g")
-dir=$(dirname $(dirname $0))/lib/${group}
-file="${dir}/${knowledge}"
-
-test -d $dir || mkdir -p $dir
-
-overwrite=0
-if [ -f $file ];then
-    echo "knowledge exists. do you want to overwrite? Y/*"
-    while read -s line;do
-        if [ Y = "$line" ];then
-            overwrite=1
-            break
-        fi
-        exit 0
-    done
-fi
-
-tmp=$(dirname $file)"/_$(basename $file)"
-rm -f $tmp
-
-echo 'type knowledge (finish with "q"):'
-
-while read line;do
-    if [ q = "$line" ];then
-        break
-    fi
-    echo $line >> $tmp
-done
-
-mv $tmp $file
-
-if [ $overwrite != 0 ];then
-    echo "update knowledge: $@"
-else
-    echo "remember new knowledge: $@"
-fi
-echo ""
-cat $file
+main=${libdir}/theway_main
+$bash ${main} ${PRV} ${THEME} ${words[@]}

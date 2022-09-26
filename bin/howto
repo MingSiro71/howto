@@ -1,49 +1,53 @@
 #!/bin/bash
-while getopts :ac OPT
+bash=/bin/bash
+libdir=$(dirname $(dirname $0))/lib
+source ${libdir}/version
+
+ANB=0
+COPY=0
+words=()
+
+while (( $# > 0 ))
 do
-    case $OPT in
-        a)  ambiguous=1
-            ;;
-        c)  copy=1
-            ;;
-        \?) echo "howto: invalid option.";exit 1
+    case $1 in
+        -h | --help)
+            echo "howto ${version}"
+            echo "Usage: howto [-a|--ambiguous|-c|--copy] WORDS..."
+            echo "Options:"
+            echo "    -a, --ambiguous: show knowledges contains input words."
+            echo "    -c, --copy: copy found one on your clipboard instead of output."
+            exit 0
+        ;;
+        -a | --ambiguous)
+            ANB=1
+        ;;
+        -c | --copy)
+            COPY=1
+        ;;
+        -* | --*)
+            echo "bad option." 1>&2
+            exit 1
+        ;;
+        *)
+            words+=($1)
+        ;;
     esac
+    shift
 done
 
-shift $((OPTIND - 1))
-
-if [ $# -lt 1 ];then
-    echo "howto: needs words what you want to do."
+if [ ${#words[@]} -lt 1 ];then
+    echo "howto: needs words what you want to do." 1>&2
     exit 1
 fi
 
-libdir=`dirname $(dirname $0)`/lib/
+main=${libdir}/howto_main
+ambiguous=${libdir}/howto_ambiguous_search
 
-# for anbiguous mode
-if [ ${ambiguous+1} ];then
-    expression=$(echo *${@}* | sed "s/ /*/g")
-    availables=$(find $libdir -name "$expression")
-    if [ -z "$availables" ];then
-        echo "no knowledge available.";exit 2
-    fi
-    echo "available knowledges:"
-    for item in $availables;do
-        echo -en `basename $item | sed "s/-/ /g"`"\t"
-    done
-    echo ''
-    exit 0
-fi
-
-# main
-target=$(echo $@ | sed "s/ /-/g")
-libdir=`dirname $(dirname $0)`/lib/
-knowledge=`find $libdir -name $target | head -n 1`
-if [ -z "$knowledge" ];then
-    echo "no knowledge available.";exit 2
-fi
-if [ ${copy+1} ];then
-    cat $knowledge | tr "\r\n" ";" | clip.exe
+if [ ${ANB} -eq 1 ];then
+    # ambiguous search
+    $bash ${ambiguous} ${words[@]}
 else
-    cat $knowledge
+    # regular search
+    $bash ${main} ${COPY} ${words[@]}
 fi
-exit 0
+exit $?

@@ -1,45 +1,61 @@
-# howto: WSL version
-Lookup commands which are too long to type or complicated to remember
-ON YOUR TERMINAL.
+# howto
+Memorize and lookup knowredges that are hard to remember, such as complicated docker command, on YOUR TERMINAL.
 
-This works only on WSL.
-Please customize clipboard-concerning command
-- in Mac: "clip.exe" to "pbcopy".
-- in Linux: ask google! :-P
-
-## Instlation (recomended for your own workstation)
-1. Change bin file to 755
+## Instlation (recomended that clone on your account's root directory)
+1. Clone sources
     ```
-    chmod 755 howto/bin/*
+    git clone https://github.com/MingSiro71/howto.git
     ```
-2. Add ${HOME}/howto/bin into $PATH
+2. Change bin file to 755
     ```
-    'export PATH=${PATH}:${HOME}/howto/bin' >> .bashrc
+    chmod 755 ./howto/bin/*
+    ```
+3. Add howto's bin directory to $PATH
+    If you install source into your HOME directory, this will work.
+    ```
+    'export PATH=${PATH}:${HOME}/howto/bin' >> ~/.bashrc
     source .bashrc
     ```
-    replace ".bashrc" to ".zshrc" if you use zsh.
-
-## Lookup comamnd
-type "howto" command
-```
-howto do something
-> my command
-```
-
-### options
-- ambiguous (-a): Search stored knowledge which matches to argument.
-- copy (-c): Instead of showing command, copy them to clipboard.
+    Please replace ".bashrc" to ".zshrc" if you use zsh, or some other setting file for your shell. 
 
 ## Memorize comamnd
-type "theway" command
-```
-theway do something
-> my command
-```
+    Use "theway" and you will asked how to do it. Type knowledge to keep then type "q" at the first character of the new line and type enter to finish. 
+    ```
+    theway do something
+    > type knowledge (finish with "q"):
+    my command
+    q
+    > remember new knowledge: do something
+    ----------------------------------------
+    my command    
+    ```
+### private knowledge
+    with option "-p", you can stock knowledge as private. Private knowledge will avoid tracking by git so as not to shared though you push your knowledge commit.
+    ```
+    theway -p do something
+    ```
 
-### options
-- grouped (-g GROUP): Keep knowledge into GROUP.
-- private (-p): Keep as a private knowledge.
+    Private knowledges are prior to others when you use "howto" to lookup.
 
-Private knowledges are stored in the directory which is gitignored
-and have high priority than shared knowledges.
+## Lookup comamnd
+    Use "howto" with what you want to ask.
+    ```
+    howto do something
+    > my command
+    ```
+
+### Ambiguous search
+    With "-a" or "--ambiguous", you can search knowlege by word or the part of it.
+    ```
+    howto do some
+    > available knowledges:
+    > do something
+    ```
+
+### Copy to clipboard
+    With "-c" or "--copy", it copies onto your clipboad instead of showing on terminal.
+    ```
+    howto -c do something
+    ```
+    No output is shown. Knowledge is on ready to paste.
+    * This option works mac OS (with pdcopy) or windows (& wsl, clip.exe is available from termninal).

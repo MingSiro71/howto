@@ -1,0 +1,41 @@
+source $(dirname $0)/constants
+dictdir=$(dirname $(dirname $0))/dict
+
+expression=$(echo "*${@}*" | sed "s/ /*/g")
+hits=$(find $dictdir -name "$expression" -type f | grep -v "\..*")
+
+if [ -z "$hits" ];then
+    echo "no knowledge available." 1>&2
+    exit 2
+fi
+
+keys=()
+for item in $hits;do
+    topic=$(basename $item)
+    theme=$(basename $(dirname $item))
+    key="${topic}/${theme}"
+
+    new=1
+    for k in ${keys[@]};do
+        if [ "$k" == "$key" ];then
+            new=0
+        fi
+    done
+    if [ $new -eq 1 ];then
+        keys+=($key)
+    fi
+
+done
+echo "available knowledges:"
+for item in ${keys[@]};do
+    fragments=(${item//\// })
+    topic=${fragments[0]}
+    theme=${fragments[1]}
+    if [ "$theme" == "$DEFAULT_THEME" ];then
+        echo -en "${topic//-/ }\t"
+    else
+        echo -en "${topic//-/ } (${theme})\t"
+    fi
+done
+echo ''
+exit 0
