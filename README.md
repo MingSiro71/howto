@@ -1,12 +1,13 @@
 # howto
 Memorize and lookup knowredges that are hard to remember, such as complicated docker command, on YOUR TERMINAL.
+NOTE: This program targets "bash" shell, expecting "/bin/bash" as bash is exist on os.
 
 ## Instlation (recomended that clone on your account's root directory)
 1. Clone sources
     ```
     git clone https://github.com/MingSiro71/howto.git
     ```
-2. Change bin file to 755
+2. Change bin files' permission to 755
     ```
     chmod 755 ./howto/bin/*
     ```
@@ -16,10 +17,10 @@ Memorize and lookup knowredges that are hard to remember, such as complicated do
     'export PATH=${PATH}:${HOME}/howto/bin' >> ~/.bashrc
     source .bashrc
     ```
-    Please replace ".bashrc" to ".zshrc" if you use zsh, or some other setting file for your shell. 
+    Please replace ".bashrc" to ".zshrc" if you use zsh, or some other setting file for your shell.
 
-## Memorize comamnd
-    Use "theway" and you will asked how to do it. Type knowledge to keep then type "q" at the first character of the new line and type enter to finish. 
+## Memorize command
+    Use "theway" and you will asked how to do it. Type knowledge to keep then type "q" at the first character of the new line and type enter to finish.
     ```
     theway do something
     > type knowledge (finish with "q"):
@@ -27,7 +28,7 @@ Memorize and lookup knowredges that are hard to remember, such as complicated do
     q
     > remember new knowledge: do something
     ----------------------------------------
-    my command    
+    my command
     ```
 ### private knowledge
     with option "-p", you can stock knowledge as private. Private knowledge will avoid tracking by git so as not to shared though you push your knowledge commit.
@@ -37,7 +38,7 @@ Memorize and lookup knowredges that are hard to remember, such as complicated do
 
     Private knowledges are prior to others when you use "howto" to lookup.
 
-## Lookup comamnd
+## Lookup command
     Use "howto" with what you want to ask.
     ```
     howto do something
