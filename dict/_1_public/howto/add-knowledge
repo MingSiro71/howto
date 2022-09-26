@@ -1,0 +1,5 @@
+to share
+    theway WORDS... [on THEME] 
+keep private
+    theway -p [WORDS...] [on THEME]
+without THEME, knowledge is classified as "common".
