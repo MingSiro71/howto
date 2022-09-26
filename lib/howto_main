@@ -4,13 +4,17 @@ dictdir=$(dirname $(dirname $0))/dict
 COPY=$1
 shift
 
-# private(0) is prior to public(1)
-PRIVATE="_0_private"
-PUBRIC="_1_public"
-
 # font
 ENPH="\e[1m\e[3m"
 RESET="\e[0m"
+
+# if zsh is main shell, switch zsh when to print characters with ANSI escape code.
+# check $SHELL.
+fragments=(${SHELL//\// })
+zsh=0
+if [ "${fragments[${#fragments[@]}-1]}" == "zsh" ];then
+    zsh=1
+fi
 
 # target=$(echo $@ | sed "s/ /-/g")
 
@@ -46,7 +50,11 @@ if [ -z "$availables" ];then
         for tpc in ${topics[@]};do
             tail=${tpc/${target}-/""}
             tails+=($tail)
-            echo -e ${target//-/ } ${ENPH}${tail//-/ }${RESET}
+            if [ $zsh -eq 1 ];then
+                ${SHELL} -c "echo -e \"${target//-/ } ${ENPH}${tail//-/ }${RESET}\""
+            else
+                echo -e "${target//-/ } ${ENPH}${tail//-/ }${RESET}"
+            fi
         done
 
         possibles=()
@@ -76,7 +84,7 @@ if [ -z "$availables" ];then
                         # completely matched
                         if [ -n "$match" ];then
                             match=${match}-${frg}
-                        else 
+                        else
                             match=${frg}
                         fi
                         cmatch=1
@@ -84,7 +92,7 @@ if [ -z "$availables" ];then
                         # partially matched
                         if [ -n "$match" ];then
                             match=${match}-${frg}
-                        else 
+                        else
                             match=${frg}
                         fi
                     else
@@ -114,7 +122,7 @@ if [ -z "$availables" ];then
 
                     if [ "$ans" != "n" ] && [ "$ans" != "N" ];then
                        identified=1
-                    fi 
+                    fi
                 fi
                 break
             elif [ ${#possibles[@]} -gt 0 ];then
@@ -151,7 +159,11 @@ done
 
 if [ ${#themes[@]} -gt 1 ]; then
     for theme in ${themes[@]};do
-        echo -e "${target} ${ENPH}on ${theme}${RESET}"
+        if [ $zsh -eq 1 ];then
+            ${SHELL} -c "echo -e \"${target} ${ENPH}on ${theme}${RESET}\""
+        else
+            echo -e "${target} ${ENPH}on ${theme}${RESET}"
+        fi
     done
 
     knowledge=""
@@ -163,24 +175,28 @@ if [ ${#themes[@]} -gt 1 ]; then
 
         for tm in ${themes[@]};do
             if [ "$tm" == "$theme" ];then
-                knowledge=`find "$dictdir/$PRIVATE/${theme}" -name $target | head -n 1`
+                if [ -d "${dictdir}/$PRIVATE/${theme}" ];then
+                    knowledge=`find "${dictdir}/$PRIVATE/${theme}" -name $target | head -n 1`
+                fi
                 if [ -z "$knowledge" ];then
-                    knowledge=`find "$dictdir/${PUBRIC}/${theme}" -name $target | head -n 1`
-                fi 
+                    knowledge=`find "${dictdir}/${PUBRIC}/${theme}" -name $target | head -n 1`
+                fi
                 break
             fi
         done
         if [ -n "$knowledge" ];then
             break
-        fi 
+        fi
 
         echo -n "${theme} is not in list. Retype: "
     done
 else
-    knowledge=`find "$dictdir/$PRIVATE/${themes[0]}" -name $target | head -n 1`
+    if [ -d "${dictdir}/$PRIVATE/${theme}" ];then
+        knowledge=`find "${dictdir}/${PRIVATE}/${themes[0]}" -name $target | head -n 1`
+    fi
     if [ -z "$knowledge" ];then
-        knowledge=`find "$dictdir/${PUBRIC}/${themes[0]}" -name $target | head -n 1`
-    fi 
+        knowledge=`find "${dictdir}/${PUBRIC}/${themes[0]}" -name $target | head -n 1`
+    fi
 fi
 
 if [ ${COPY} -eq 1 ];then
