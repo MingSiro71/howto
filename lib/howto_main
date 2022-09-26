@@ -1,14 +1,188 @@
-dictdir=`dirname $(dirname $0)`/dict
+source $(dirname $0)/constants
+dictdir=$(dirname $(dirname $0))/dict
 
 COPY=$1
 shift
 
+# private(0) is prior to public(1)
+PRIVATE="_0_private"
+PUBRIC="_1_public"
+
+# font
+ENPH="\e[1m\e[3m"
+RESET="\e[0m"
+
+# target=$(echo $@ | sed "s/ /-/g")
+
+# search exact match
 target=$(echo $@ | sed "s/ /-/g")
-knowledge=`find $dictdir/ -name $target | head -n 1`
-if [ -z "$knowledge" ];then
-    echo "no knowledge available."
-    exit 2
+availables=$(find $dictdir -name $target -type f | grep -v "\..*")
+
+if [ -z "$availables" ];then
+    identified=0
+    while :
+    do
+        # seek candidates
+        hits=$(find $dictdir -name "$target-*" -type f | grep -v "\..*")
+
+        topics=()
+        for item in ${hits[@]};do
+            fragments=(${item//\// })
+            topic=${fragments[${#fragments[@]}-1]}
+
+            new=1
+            for tpc in ${topics[@]};do
+                if [ "$tpc" == "$topic" ];then
+                    new=0
+                    break
+                fi
+            done
+            if [ $new -eq 1 ];then
+                topics+=($topic)
+            fi
+        done
+
+        tails=()
+        for tpc in ${topics[@]};do
+            tail=${tpc/${target}-/""}
+            tails+=($tail)
+            echo -e ${target//-/ } ${ENPH}${tail//-/ }${RESET}
+        done
+
+        possibles=()
+        cmatch=0
+        while :
+        do
+            echo -n "${target//-/ } "
+            read phrase
+
+            for tail in ${tails[@]};do
+                if [ ${#tail} -lt ${#phrase} ];then
+                    continue
+                fi
+                fragments=(${phrase//-/ })
+                match=""
+                for frg in ${fragments[@]};do
+                    if [ -n "$match" ];then
+                        diff=${tail//"${match}-${frg}"/}
+                    else
+                        diff=${tail//"$frg"/}
+                    fi
+
+                    if [ "$diff" == "$tail" ];then
+                        # not matched
+                        break
+                    elif [ -z "$diff" ];then
+                        # completely matched
+                        if [ -n "$match" ];then
+                            match=${match}-${frg}
+                        else 
+                            match=${frg}
+                        fi
+                        cmatch=1
+                    elif [[ ${diff} =~ ^-.* ]];then
+                        # partially matched
+                        if [ -n "$match" ];then
+                            match=${match}-${frg}
+                        else 
+                            match=${frg}
+                        fi
+                    else
+                        # word incompleted
+                        match=""
+                        break
+                    fi
+                done
+
+                if [ -n "$match" ];then
+                    possibles+=($tail)
+                fi
+
+            done
+
+            if [ $cmatch -eq 1 ];then
+                if [ ${#possibles[@]} -eq 1 ];then
+                    identified=1
+                    break
+                elif [ ${#possibles[@]} -gt 1 ];then
+                    echo -n "Asking for: ${target//-/ } ${phrase} ? [*Y/n]: "
+                    read -n 1 ans
+
+                    if [ -n "$ans" ];then
+                        echo ""
+                    fi
+
+                    if [ "$ans" != "n" ] && [ "$ans" != "N" ];then
+                       identified=1
+                    fi 
+                fi
+                break
+            elif [ ${#possibles[@]} -gt 0 ];then
+                break
+            fi
+        done
+        # update target
+        target="${target}-${phrase// /-}"
+        # break if identified the topic
+        if [ $identified -eq 1 ];then
+            break
+        fi
+    done
+    availables=$(find $dictdir -name $target -type f | grep -v "\..*")
 fi
+
+stack=()
+themes=()
+
+for item in $availables;do
+    fragments=(${item//\// })
+    theme=${fragments[${#fragments[@]}-2]}
+    new=1
+    for tm in ${themes[@]};do
+        if [ "$tm" == "$theme" ];then
+            new=0
+            break
+        fi
+    done
+    if [ $new -eq 1 ];then
+        themes+=($theme)
+    fi
+done
+
+if [ ${#themes[@]} -gt 1 ]; then
+    for theme in ${themes[@]};do
+        echo -e "${target} ${ENPH}on ${theme}${RESET}"
+    done
+
+    knowledge=""
+
+    while :
+    do
+        echo -n "on "
+        read theme
+
+        for tm in ${themes[@]};do
+            if [ "$tm" == "$theme" ];then
+                knowledge=`find "$dictdir/$PRIVATE/${theme}" -name $target | head -n 1`
+                if [ -z "$knowledge" ];then
+                    knowledge=`find "$dictdir/${PUBRIC}/${theme}" -name $target | head -n 1`
+                fi 
+                break
+            fi
+        done
+        if [ -n "$knowledge" ];then
+            break
+        fi 
+
+        echo -n "${theme} is not in list. Retype: "
+    done
+else
+    knowledge=`find "$dictdir/$PRIVATE/${themes[0]}" -name $target | head -n 1`
+    if [ -z "$knowledge" ];then
+        knowledge=`find "$dictdir/${PUBRIC}/${themes[0]}" -name $target | head -n 1`
+    fi 
+fi
+
 if [ ${COPY} -eq 1 ];then
     # for mac OS
     cat $knowledge | tr "\r\n" ";" | pbcopy 2>/dev/null

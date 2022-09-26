@@ -26,7 +26,7 @@ Memorize and lookup knowredges that are hard to remember, such as complicated do
     my command
     q
     > remember new knowledge: do something
-
+    ----------------------------------------
     my command    
     ```
 ### private knowledge
