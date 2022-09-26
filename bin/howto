@@ -17,12 +17,12 @@ if [ $# -lt 1 ];then
     exit 1
 fi
 
-libdir=`dirname $(dirname $0)`/lib/
+dictdir=`dirname $(dirname $0)`/dict
 
-# for anbiguous mode
+# for ambiguous mode
 if [ ${ambiguous+1} ];then
     expression=$(echo *${@}* | sed "s/ /*/g")
-    availables=$(find $libdir -name "$expression")
+    availables=$(find $dictdir -name "$expression")
     if [ -z "$availables" ];then
         echo "no knowledge available.";exit 2
     fi
@@ -36,8 +36,7 @@ fi
 
 # main
 target=$(echo $@ | sed "s/ /-/g")
-libdir=`dirname $(dirname $0)`/lib/
-knowledge=`find $libdir -name $target | head -n 1`
+knowledge=`find $dictdir -name $target | head -n 1`
 if [ -z "$knowledge" ];then
     echo "no knowledge available.";exit 2
 fi
