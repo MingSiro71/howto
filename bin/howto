@@ -1,15 +1,4 @@
 #!/bin/bash
-# while getopts :ac OPT
-# do
-#     case $OPT in
-#         a)  ambiguous=1
-#             ;;
-#         c)  copy=1
-#             ;;
-#         \?) echo "howto: invalid option.";exit 1
-#     esac
-# done
-
 bash=/bin/bash
 libdir=`dirname $(dirname $0)`/lib
 source ${libdir}/version
