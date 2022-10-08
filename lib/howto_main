@@ -177,7 +177,7 @@ if [ ${#themes[@]} -gt 1 ]; then
                     knowledge=`find "${dictdir}/$PRIVATE/${theme}" -name $target | head -n 1`
                 fi
                 if [ -z "$knowledge" ];then
-                    knowledge=`find "${dictdir}/${PUBRIC}/${theme}" -name $target | head -n 1`
+                    knowledge=`find "${dictdir}/${PUBLIC}/${theme}" -name $target | head -n 1`
                 fi
                 break
             fi
@@ -193,7 +193,7 @@ else
         knowledge=`find "${dictdir}/${PRIVATE}/${themes[0]}" -name $target | head -n 1`
     fi
     if [ -z "$knowledge" ];then
-        knowledge=`find "${dictdir}/${PUBRIC}/${themes[0]}" -name $target | head -n 1`
+        knowledge=`find "${dictdir}/${PUBLIC}/${themes[0]}" -name $target | head -n 1`
     fi
 fi
 
