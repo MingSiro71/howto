@@ -3,7 +3,7 @@ dictdir=$(dirname $(dirname $0))/dict
 
 PRV=$1
 THEME=$2
-shift
+shift;shift
 
 visibility=${PUBLIC}
 if [ $PRV -eq 1 ];then

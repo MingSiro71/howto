@@ -1,4 +1,4 @@
 DEFAULT_THEME="common"
 
 PRIVATE="_0_private"
-PUBRIC="_1_public"
+PUBLIC="_1_public"

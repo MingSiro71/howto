@@ -16,8 +16,6 @@ if [ "${fragments[${#fragments[@]}-1]}" == "zsh" ];then
     zsh=1
 fi
 
-# target=$(echo $@ | sed "s/ /-/g")
-
 # search exact match
 target=$(echo $@ | sed "s/ /-/g")
 availables=$(find $dictdir -name $target -type f | grep -v "\..*")
