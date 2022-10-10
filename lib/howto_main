@@ -27,6 +27,10 @@ if [ -z "$availables" ];then
         # seek candidates
         hits=$(find $dictdir -name "$target-*" -type f | grep -v "\..*")
 
+        if [ -z "$hits" ];then
+            break
+        fi
+
         topics=()
         for item in ${hits[@]};do
             fragments=(${item//\// })
@@ -135,6 +139,11 @@ if [ -z "$availables" ];then
         fi
     done
     availables=$(find $dictdir -name $target -type f | grep -v "\..*")
+fi
+
+if [ -z "$availables" ];then
+    echo "no knowledge available."
+    exit 0
 fi
 
 stack=()
