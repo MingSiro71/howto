@@ -16,8 +16,6 @@ if [ "${fragments[${#fragments[@]}-1]}" == "zsh" ];then
     zsh=1
 fi
 
-# target=$(echo $@ | sed "s/ /-/g")
-
 # search exact match
 target=$(echo $@ | sed "s/ /-/g")
 availables=$(find $dictdir -name $target -type f | grep -v "\..*")
@@ -28,6 +26,10 @@ if [ -z "$availables" ];then
     do
         # seek candidates
         hits=$(find $dictdir -name "$target-*" -type f | grep -v "\..*")
+
+        if [ -z "$hits" ];then
+            break
+        fi
 
         topics=()
         for item in ${hits[@]};do
@@ -139,6 +141,11 @@ if [ -z "$availables" ];then
     availables=$(find $dictdir -name $target -type f | grep -v "\..*")
 fi
 
+if [ -z "$availables" ];then
+    echo "no knowledge available."
+    exit 0
+fi
+
 stack=()
 themes=()
 
@@ -179,7 +186,7 @@ if [ ${#themes[@]} -gt 1 ]; then
                     knowledge=`find "${dictdir}/$PRIVATE/${theme}" -name $target | head -n 1`
                 fi
                 if [ -z "$knowledge" ];then
-                    knowledge=`find "${dictdir}/${PUBRIC}/${theme}" -name $target | head -n 1`
+                    knowledge=`find "${dictdir}/${PUBLIC}/${theme}" -name $target | head -n 1`
                 fi
                 break
             fi
@@ -195,7 +202,7 @@ else
         knowledge=`find "${dictdir}/${PRIVATE}/${themes[0]}" -name $target | head -n 1`
     fi
     if [ -z "$knowledge" ];then
-        knowledge=`find "${dictdir}/${PUBRIC}/${themes[0]}" -name $target | head -n 1`
+        knowledge=`find "${dictdir}/${PUBLIC}/${themes[0]}" -name $target | head -n 1`
     fi
 fi
 
